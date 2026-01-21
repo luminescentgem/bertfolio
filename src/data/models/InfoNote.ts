@@ -1,4 +1,4 @@
-import Pitch from "./Pitch"
+import { Pitch } from "./Pitch"
 import NoteData from "./NoteData"
 import Duration from "./Duration"
 
