@@ -1,8 +1,8 @@
 
 export default class TimeSignature {
     constructor(
-        public n: number,
-        public d: number
+        public n: number = 4,
+        public d: number = 4
     ) {
         // If denominator isn't a power of 2
         // TODO: Make a custom Error class for this

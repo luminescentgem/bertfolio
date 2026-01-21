@@ -1,4 +1,4 @@
-enum Tune {
+enum NoteLetter {
     C = "C",
     D = "D",
     E = "E",

@@ -1,57 +1,54 @@
-import { TURBOPACK_CLIENT_BUILD_MANIFEST } from "next/dist/shared/lib/constants"
+type NoteSpelling = object & { letter: NoteLetter, accidental: Accidental, octave: number }
 
-// TAO = Tune Alteration Octave
-type TAO = object & { tune: Tune, alteration: Alteration, octave: number }
-
-const TUNE_HALFTONE_VALUES: Record<Tune, number> = {
-    [Tune.C]: 0,
-    [Tune.D]: 2,
-    [Tune.E]: 4,
-    [Tune.F]: 5,
-    [Tune.G]: 7,
-    [Tune.A]: 9,
-    [Tune.B]: 11,
+const TUNE_HALFTONE_VALUES: Record<NoteLetter, number> = {
+    [NoteLetter.C]: 0,
+    [NoteLetter.D]: 2,
+    [NoteLetter.E]: 4,
+    [NoteLetter.F]: 5,
+    [NoteLetter.G]: 7,
+    [NoteLetter.A]: 9,
+    [NoteLetter.B]: 11,
 }
 
-const HALFTONE_VALUE_TUNES: Record<number, Tune> =
+const HALFTONE_VALUE_TUNES: Record<number, NoteLetter> =
   Object.fromEntries(
     Object.entries(TUNE_HALFTONE_VALUES).map(([k, v]) => [v, k])
-  ) as Record<number, Tune>;
+  ) as Record<number, NoteLetter>;
 
-const ALTERATION_VALUES: Record<Alteration, number> = {
-    [Alteration.Flat]: -1,
-    [Alteration.Natural]: 0,
-    [Alteration.Sharp]: 1
+const ALTERATION_VALUES: Record<Accidental, number> = {
+    [Accidental.Flat]: -1,
+    [Accidental.Natural]: 0,
+    [Accidental.Sharp]: 1
 }
 
-const VALUE_ALTERATIONS: Record<number, Tune> =
+const VALUE_ALTERATIONS: Record<number, NoteLetter> =
   Object.fromEntries(
     Object.entries(ALTERATION_VALUES).map(([k, v]) => [v, k])
-  ) as Record<number, Tune>;
+  ) as Record<number, NoteLetter>;
 
 export default class Pitch { 
     constructor(public value: number) {}
 
-    public static fromTAO(tao: TAO) {
+    public static fromNoteSpelling(noteSpelling: NoteSpelling) {
         return new Pitch(
-            Pitch.tuneValue(tao.tune)
-          + Pitch.alterationValue(tao.alteration)
-          + Pitch.octaveValue(tao.octave)
+            Pitch.letterValue(noteSpelling.letter)
+          + Pitch.accidentalValue(noteSpelling.accidental)
+          + Pitch.octaveValue(noteSpelling.octave)
         )
     }
 
-    public toTAO(altPref: Alteration = Alteration.Sharp): TAO {
+    public toNoteSpelling(altPref: Accidental = Accidental.Sharp): NoteSpelling {
         const octave = Math.floor(this.value / 8);
-        const tuneAlteration = this.value % 8;
+        const letterAccidental = this.value % 8;
 
         // 1) Natural via direct table
-        const naturalTune = HALFTONE_VALUE_TUNES[tuneAlteration];
+        const naturalTune = HALFTONE_VALUE_TUNES[letterAccidental];
         if (naturalTune) {
-            return { tune: naturalTune, alteration: Alteration.Natural, octave };
+            return { letter: naturalTune, accidental: Accidental.Natural, octave };
         }
 
         // 2) Build ordered candidate list: preferred first, then the rest
-        const allAlts = [Alteration.Sharp, Alteration.Flat, Alteration.Natural];
+        const allAlts = [Accidental.Sharp, Accidental.Flat, Accidental.Natural];
         const candidates = [
             altPref,
             ...allAlts.filter(a => a !== altPref),
@@ -59,30 +56,30 @@ export default class Pitch {
 
         // 3) Try them in order
         for (const alt of candidates) {
-            const shift = Pitch.alterationValue(alt);
-            const t = HALFTONE_VALUE_TUNES[tuneAlteration + shift];
+            const shift = Pitch.accidentalValue(alt);
+            const t = HALFTONE_VALUE_TUNES[letterAccidental + shift];
             if (t) {
-                return { tune: t, alteration: alt, octave };
+                return { letter: t, accidental: alt, octave };
             }
         }
 
         // Otherwise...
         throw new Error(
-            `toTAO: cannot map pitch value=${this.value} (octave=${octave}, mod=${tuneAlteration})`
+            `toNoteSpelling: cannot map pitch value=${this.value} (octave=${octave}, mod=${letterAccidental})`
         );
     }
 
-    public toString(altPref: Alteration|null = null) {
-        const tao = altPref ? this.toTAO(altPref) : this.toTAO()
-        return tao.tune + tao.alteration + tao.octave
+    public toString(altPref: Accidental|null = null) {
+        const noteSpelling = altPref ? this.toNoteSpelling(altPref) : this.toNoteSpelling()
+        return noteSpelling.letter + noteSpelling.accidental + noteSpelling.octave
     }
 
-    public static tuneValue(tune: Tune): number {
-        return TUNE_HALFTONE_VALUES[tune]
+    public static letterValue(letter: NoteLetter): number {
+        return TUNE_HALFTONE_VALUES[letter]
     }
 
-    public static alterationValue(alteration: Alteration): number {
-        return ALTERATION_VALUES[alteration]
+    public static accidentalValue(accidental: Accidental): number {
+        return ALTERATION_VALUES[accidental]
     }
 
     public static octaveValue(octave: number): number {

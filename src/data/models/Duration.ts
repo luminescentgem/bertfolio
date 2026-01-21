@@ -1,4 +1,4 @@
-type NvD = { noteValue: NoteValue; dots: number };
+type NotatedDuration = { noteValue: NoteValue; dots: number };
 
 const QUARTER_TICKS = 480;
 
@@ -36,21 +36,21 @@ const DOT_FRACTIONS: Array<[dots: number, num: number, den: number]> = [
 export default class Duration {
   constructor(public ticks: number) {}
 
-  public static fromNvD(nvd: NvD) {
-    const base = Duration.noteValueTicks(nvd.noteValue);
-    const [num, den] = Duration.dotsFractions(nvd.dots);
+  public static fromNotatedDuration(notatedDuration: NotatedDuration) {
+    const base = Duration.noteValueTicks(notatedDuration.noteValue);
+    const [num, den] = Duration.dotsFractions(notatedDuration.dots);
 
     // Ensure integer ticks; if not, your QUARTER_TICKS is too small for that value.
     const t = (base * num) / den;
     if (!Number.isInteger(t)) {
       throw new Error(
-        `fromNvD produced non-integer ticks: base=${base}, dots=${nvd.dots} => ${t}. Increase QUARTER_TICKS.`
+        `fromNotatedDuration produced non-integer ticks: base=${base}, dots=${notatedDuration.dots} => ${t}. Increase QUARTER_TICKS.`
       );
     }
     return new Duration(t);
   }
 
-  public toNvD(): NvD {
+  public toNotatedDuration(): NotatedDuration {
     for (const [nvKey, baseTicks] of Object.entries(NOTE_VALUE_TICKS)) {
       const noteValue = nvKey as unknown as NoteValue;
 
