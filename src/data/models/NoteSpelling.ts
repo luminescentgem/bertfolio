@@ -40,6 +40,11 @@ export class NoteSpelling {
     return ALTERATION_VALUES[accidental]
   }
 
+  public static viewValue(nsv: NoteSpellingView): number {
+    return NoteSpelling.letterValue(nsv.letter) +
+           NoteSpelling.accidentalValue(nsv.accidental)
+  }
+
   public format(altPref: Accidental = Accidental.Sharp): NoteSpellingView {
     const pc = this.value
 
@@ -67,5 +72,9 @@ export class NoteSpelling {
     }
 
     throw new Error(`NoteSpelling.format: cannot map pitch class=${pc}`)
+  }
+
+  public static fromView(nsv: NoteSpellingView): NoteSpelling {
+    return new NoteSpelling(NoteSpelling.viewValue(nsv))
   }
 }

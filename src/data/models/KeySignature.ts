@@ -66,13 +66,14 @@ export default class KeySignature {
     private defaultAccidental: AccidentalPreference
 
     constructor(
-        private tonic: NoteSpelling = new NoteSpelling(0),
+        private tonic: NoteSpellingView = 
+            { letter: NoteLetter.C, accidental: Accidental.Natural },
         private mode: Mode = Mode.Major
     ) {
         this.defaultAccidental = this.computeAccidental(tonic, mode)
     }
 
-    public getTonic(): NoteSpelling {
+    public getTonic(): NoteSpellingView {
         return this.tonic
     }
 
@@ -95,8 +96,8 @@ export default class KeySignature {
         }
     }
 
-    private computeAccidental(tonic: NoteSpelling, mode: Mode): AccidentalPreference {
-        const offset = (tonic.value + MODE_OFFSETS[mode]) % 12
+    private computeAccidental(tonic: NoteSpellingView, mode: Mode): AccidentalPreference {
+        const offset = (NoteSpelling.viewValue(tonic) + MODE_OFFSETS[mode]) % 12
         const noteSpellingSubstitute = new NoteSpelling(offset)
         const spelledTonic = spellingKey(noteSpellingSubstitute.format())
         return ACCIDENTAL_PREFERENCE_FOR_MAJOR[spelledTonic]
