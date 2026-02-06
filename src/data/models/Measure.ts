@@ -1,11 +1,13 @@
 import InfoNote from "./InfoNote"
 import TimeSignature from "./TimeSignature"
 import Duration from "./Duration"
+import KeySignature from "./KeySignature";
 
 export default class Measure {
     public notes: Array<InfoNote> = []
     constructor(
-        public timeSignature: TimeSignature = new TimeSignature(4, 4)
+        public timeSignature: TimeSignature,
+        public keySignature: KeySignature
     ) { }
 
     public addNote(note: InfoNote) {
@@ -20,7 +22,7 @@ export default class Measure {
         this.notes.splice(place, 0, note);
     }
 
-    private capacity(): number {
+    public capacity(): number {
         const [nBeats, expB2BeatValue] = this.timeSignature.toArray()
         const beatValue: NoteValue = Math.log2(expB2BeatValue)
         const ticksPerBeat = Duration.noteValueTicks(beatValue)
