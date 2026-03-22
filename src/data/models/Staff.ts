@@ -14,9 +14,11 @@ export const CLEF_PRESETS = {
 
 export default class Staff {
     public measures: Array<Measure> = []
+    public clefOverrides: Map<number, Clef> = new Map
     constructor(
         public signature: TimeSignature = new TimeSignature(),
-        public key: KeySignature = new KeySignature()
+        public key: KeySignature = new KeySignature(),
+        public masterClef: Clef = CLEF_PRESETS.Treble
     ) {
     }
 
@@ -75,5 +77,17 @@ export default class Staff {
             this.addEmpty()
         }
         return this.measures[index]
+    }
+    public setClefOverride(measureIndex: number, clef: Clef): void {
+        if (!Number.isInteger(measureIndex) || measureIndex < 0) throw new Error("bad measureIndex")
+        this.clefOverrides.set(measureIndex, clef)
+    }
+
+    public clearClefOverride(measureIndex: number): void {
+        this.clefOverrides.delete(measureIndex)
+    }
+
+    public getClefAtMeasure(measureIndex: number): Clef {
+        return this.clefOverrides.get(measureIndex) ?? this.masterClef
     }
 }
