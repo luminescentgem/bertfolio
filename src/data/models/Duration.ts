@@ -54,7 +54,7 @@ export default class Duration {
 
   public toNotatedDuration(): NotatedDuration {
     for (const [nvKey, baseTicks] of Object.entries(NOTE_VALUE_TICKS)) {
-      const noteValue = nvKey as unknown as NoteValue;
+      const noteValue = Number(nvKey) as NoteValue;
 
       for (const [dots, num, den] of DOT_FRACTIONS) {
         // exact integer comparison: baseTicks * num / den === ticks

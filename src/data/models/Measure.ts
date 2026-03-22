@@ -70,7 +70,7 @@ export default class Measure {
             if (pos + dur > next.tickPosition) return -1;
         }
 
-        return idx-1;
+        return idx;
     }
 
 }
