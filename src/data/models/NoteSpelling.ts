@@ -1,4 +1,7 @@
-export type NoteSpellingView = { letter: NoteLetter, accidental: Accidental }
+import { Accidental } from "../enums/Accidental"
+import { NoteLetter } from "../enums/NoteLetter"
+
+export type NoteSpellingDTO = { letter: NoteLetter, accidental: Accidental }
 
 const TUNE_HALFTONE_VALUES: Record<NoteLetter, number> = {
   [NoteLetter.C]: 0,
@@ -40,12 +43,12 @@ export class NoteSpelling {
     return ALTERATION_VALUES[accidental]
   }
 
-  public static viewValue(nsv: NoteSpellingView): number {
+  public static viewValue(nsv: NoteSpellingDTO): number {
     return NoteSpelling.letterValue(nsv.letter) +
            NoteSpelling.accidentalValue(nsv.accidental)
   }
 
-  public format(altPref: Accidental = Accidental.Sharp): NoteSpellingView {
+  public format(altPref: Accidental = Accidental.Sharp): NoteSpellingDTO {
     const pc = this.value
 
     // 1) Natural via direct table
@@ -74,7 +77,7 @@ export class NoteSpelling {
     throw new Error(`NoteSpelling.format: cannot map pitch class=${pc}`)
   }
 
-  public static fromView(nsv: NoteSpellingView): NoteSpelling {
+  public static fromView(nsv: NoteSpellingDTO): NoteSpelling {
     return new NoteSpelling(NoteSpelling.viewValue(nsv))
   }
 }

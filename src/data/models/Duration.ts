@@ -1,3 +1,5 @@
+import { NoteValue } from "../enums/NoteValue";
+
 type NotatedDuration = { noteValue: NoteValue; dots: number };
 
 const QUARTER_TICKS = 480;

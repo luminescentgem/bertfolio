@@ -2,6 +2,7 @@ import InfoNote from "./InfoNote"
 import TimeSignature from "./TimeSignature"
 import Duration from "./Duration"
 import KeySignature from "./KeySignature";
+import { NoteValue } from "../enums/NoteValue";
 
 export default class Measure {
     public notes: Array<InfoNote> = []

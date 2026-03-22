@@ -1,5 +1,5 @@
 // Mapped to n such that its duration is 1/2^n
-enum NoteValue {
+export enum NoteValue {
     Maxima = -3,
     Longa = -2,
     Breve = -1,

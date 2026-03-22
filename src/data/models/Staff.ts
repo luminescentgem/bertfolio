@@ -1,9 +1,18 @@
-import KeySignature from "./KeySignature";
-import Measure from "./Measure";
-import TimeSignature from "./TimeSignature";
+import { Clef, ClefKind } from "./Clef"
+import KeySignature from "./KeySignature"
+import Measure from "./Measure"
+import TimeSignature from "./TimeSignature"
+
+export const CLEF_PRESETS = {
+  Treble:  { kind: ClefKind.G, line: 2, octaveShift: 0 },
+  Treble8: { kind: ClefKind.G, line: 2, octaveShift: -1 },
+  Bass:    { kind: ClefKind.F, line: 4, octaveShift: 0 },
+  Bass8:   { kind: ClefKind.F, line: 4, octaveShift: -1 },
+  Alto:    { kind: ClefKind.C, line: 3, octaveShift: 0 },
+  Tenor:   { kind: ClefKind.C, line: 4, octaveShift: 0 },
+} as const;
 
 export default class Staff {
-    
     public measures: Array<Measure> = []
     constructor(
         public signature: TimeSignature = new TimeSignature(),

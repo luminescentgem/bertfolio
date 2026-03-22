@@ -1,4 +1,4 @@
-enum Mode {
+export enum Mode {
   Ionian = 0,
   Major = 0,
 

@@ -1,6 +1,7 @@
-import { NoteSpelling, NoteSpellingView } from "./NoteSpelling"
+import { Accidental } from "../enums/Accidental"
+import { NoteSpelling, NoteSpellingDTO } from "./NoteSpelling"
 
-export type PitchSpelling = NoteSpellingView & { octave: number }
+export type PitchSpelling = NoteSpellingDTO & { octave: number }
 
 export class Pitch {
   constructor(public value: number) {}

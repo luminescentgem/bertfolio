@@ -1,4 +1,4 @@
-enum Accidental {
+export enum Accidental {
     Flat = "b",
     Natural = "",
     Sharp = "#"

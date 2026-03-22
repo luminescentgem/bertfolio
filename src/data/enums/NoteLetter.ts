@@ -1,4 +1,4 @@
-enum NoteLetter {
+export enum NoteLetter {
     C = "C",
     D = "D",
     E = "E",

@@ -1,4 +1,7 @@
-import { NoteSpelling, NoteSpellingView } from "./NoteSpelling"
+import { NoteSpelling, NoteSpellingDTO } from "./NoteSpelling"
+import { NoteLetter } from "../enums/NoteLetter";
+import { Accidental } from "../enums/Accidental";
+import { Mode } from "../enums/Mode";
 
 function rotateLeft<T>(arr: T[], k: number): T[] {
   const n = arr.length
@@ -7,49 +10,49 @@ function rotateLeft<T>(arr: T[], k: number): T[] {
 }
 
 type SpelledTonic = string
-function spellingKey(nsv: NoteSpellingView): SpelledTonic {
+function spellingKey(nsv: NoteSpellingDTO): SpelledTonic {
     return `${nsv.letter}${nsv.accidental}`
 }
 
-enum AccidentalPreference {
-    Sharp, Flat, Neutral
+enum EnharmonicBias {
+    PreferSharps, PreferFlats, NoBias
 }
 
-const ACCIDENTAL_PREFERENCE_FOR_MAJOR: Record<SpelledTonic, AccidentalPreference> = {
+const ACCIDENTAL_PREFERENCE_FOR_MAJOR: Record<SpelledTonic, EnharmonicBias> = {
   // C
-  [spellingKey({ letter: NoteLetter.C, accidental: Accidental.Flat })]: AccidentalPreference.Flat,
-  [spellingKey({ letter: NoteLetter.C, accidental: Accidental.Natural })]: AccidentalPreference.Neutral,
-  [spellingKey({ letter: NoteLetter.C, accidental: Accidental.Sharp })]: AccidentalPreference.Sharp,
+  [spellingKey({ letter: NoteLetter.C, accidental: Accidental.Flat })]: EnharmonicBias.PreferFlats,
+  [spellingKey({ letter: NoteLetter.C, accidental: Accidental.Natural })]: EnharmonicBias.NoBias,
+  [spellingKey({ letter: NoteLetter.C, accidental: Accidental.Sharp })]: EnharmonicBias.PreferSharps,
 
   // D
-  [spellingKey({ letter: NoteLetter.D, accidental: Accidental.Flat })]: AccidentalPreference.Flat,
-  [spellingKey({ letter: NoteLetter.D, accidental: Accidental.Natural })]: AccidentalPreference.Sharp,
-  [spellingKey({ letter: NoteLetter.D, accidental: Accidental.Sharp })]: AccidentalPreference.Sharp,
+  [spellingKey({ letter: NoteLetter.D, accidental: Accidental.Flat })]: EnharmonicBias.PreferFlats,
+  [spellingKey({ letter: NoteLetter.D, accidental: Accidental.Natural })]: EnharmonicBias.PreferSharps,
+  [spellingKey({ letter: NoteLetter.D, accidental: Accidental.Sharp })]: EnharmonicBias.PreferSharps,
 
   // E
-  [spellingKey({ letter: NoteLetter.E, accidental: Accidental.Flat })]: AccidentalPreference.Flat,
-  [spellingKey({ letter: NoteLetter.E, accidental: Accidental.Natural })]: AccidentalPreference.Sharp,
-  [spellingKey({ letter: NoteLetter.E, accidental: Accidental.Sharp })]: AccidentalPreference.Sharp,
+  [spellingKey({ letter: NoteLetter.E, accidental: Accidental.Flat })]: EnharmonicBias.PreferFlats,
+  [spellingKey({ letter: NoteLetter.E, accidental: Accidental.Natural })]: EnharmonicBias.PreferSharps,
+  [spellingKey({ letter: NoteLetter.E, accidental: Accidental.Sharp })]: EnharmonicBias.PreferSharps,
 
   // F
-  [spellingKey({ letter: NoteLetter.F, accidental: Accidental.Flat })]: AccidentalPreference.Flat,
-  [spellingKey({ letter: NoteLetter.F, accidental: Accidental.Natural })]: AccidentalPreference.Flat,
-  [spellingKey({ letter: NoteLetter.F, accidental: Accidental.Sharp })]: AccidentalPreference.Sharp,
+  [spellingKey({ letter: NoteLetter.F, accidental: Accidental.Flat })]: EnharmonicBias.PreferFlats,
+  [spellingKey({ letter: NoteLetter.F, accidental: Accidental.Natural })]: EnharmonicBias.PreferFlats,
+  [spellingKey({ letter: NoteLetter.F, accidental: Accidental.Sharp })]: EnharmonicBias.PreferSharps,
 
   // G
-  [spellingKey({ letter: NoteLetter.G, accidental: Accidental.Flat })]: AccidentalPreference.Flat,
-  [spellingKey({ letter: NoteLetter.G, accidental: Accidental.Natural })]: AccidentalPreference.Sharp,
-  [spellingKey({ letter: NoteLetter.G, accidental: Accidental.Sharp })]: AccidentalPreference.Sharp,
+  [spellingKey({ letter: NoteLetter.G, accidental: Accidental.Flat })]: EnharmonicBias.PreferFlats,
+  [spellingKey({ letter: NoteLetter.G, accidental: Accidental.Natural })]: EnharmonicBias.PreferSharps,
+  [spellingKey({ letter: NoteLetter.G, accidental: Accidental.Sharp })]: EnharmonicBias.PreferSharps,
 
   // A
-  [spellingKey({ letter: NoteLetter.A, accidental: Accidental.Flat })]: AccidentalPreference.Flat,
-  [spellingKey({ letter: NoteLetter.A, accidental: Accidental.Natural })]: AccidentalPreference.Sharp,
-  [spellingKey({ letter: NoteLetter.A, accidental: Accidental.Sharp })]: AccidentalPreference.Sharp,
+  [spellingKey({ letter: NoteLetter.A, accidental: Accidental.Flat })]: EnharmonicBias.PreferFlats,
+  [spellingKey({ letter: NoteLetter.A, accidental: Accidental.Natural })]: EnharmonicBias.PreferSharps,
+  [spellingKey({ letter: NoteLetter.A, accidental: Accidental.Sharp })]: EnharmonicBias.PreferSharps,
 
   // B
-  [spellingKey({ letter: NoteLetter.B, accidental: Accidental.Flat })]: AccidentalPreference.Flat,
-  [spellingKey({ letter: NoteLetter.B, accidental: Accidental.Natural })]: AccidentalPreference.Sharp,
-  [spellingKey({ letter: NoteLetter.B, accidental: Accidental.Sharp })]: AccidentalPreference.Sharp,
+  [spellingKey({ letter: NoteLetter.B, accidental: Accidental.Flat })]: EnharmonicBias.PreferFlats,
+  [spellingKey({ letter: NoteLetter.B, accidental: Accidental.Natural })]: EnharmonicBias.PreferSharps,
+  [spellingKey({ letter: NoteLetter.B, accidental: Accidental.Sharp })]: EnharmonicBias.PreferSharps,
 }
 
 const MODE_OFFSETS: Record<Mode, number> = {
@@ -63,17 +66,17 @@ const MODE_OFFSETS: Record<Mode, number> = {
 }
 
 export default class KeySignature {
-    private defaultAccidental: AccidentalPreference
+    private defaultAccidental: EnharmonicBias
 
     constructor(
-        private tonic: NoteSpellingView = 
+        private tonic: NoteSpellingDTO = 
             { letter: NoteLetter.C, accidental: Accidental.Natural },
         private mode: Mode = Mode.Major
     ) {
         this.defaultAccidental = this.computeAccidental(tonic, mode)
     }
 
-    public getTonic(): NoteSpellingView {
+    public getTonic(): NoteSpellingDTO {
         return this.tonic
     }
 
@@ -81,25 +84,27 @@ export default class KeySignature {
         return this.mode
     }
 
-    public getAccidentalPreference(): AccidentalPreference {
+    public getAccidentalPreference(): EnharmonicBias {
         return this.defaultAccidental
     }
 
-    public alignEnharmonic(noteSpelling: NoteSpelling): NoteSpellingView {
+    public alignEnharmonic(noteSpelling: NoteSpelling): NoteSpellingDTO {
         switch (this.defaultAccidental) {
-            case AccidentalPreference.Flat:
+            case EnharmonicBias.PreferFlats:
                 return noteSpelling.format(Accidental.Flat)
-            case AccidentalPreference.Sharp:
+            case EnharmonicBias.PreferSharps:
                 return noteSpelling.format(Accidental.Sharp)
-            case AccidentalPreference.Neutral:
-                return noteSpelling.format(Accidental.Flat)
+            case EnharmonicBias.NoBias:
+                return noteSpelling.format()
         }
     }
 
-    private computeAccidental(tonic: NoteSpellingView, mode: Mode): AccidentalPreference {
-        const offset = (NoteSpelling.viewValue(tonic) + MODE_OFFSETS[mode]) % 12
-        const noteSpellingSubstitute = new NoteSpelling(offset)
-        const spelledTonic = spellingKey(noteSpellingSubstitute.format())
+    private computeAccidental(tonic: NoteSpellingDTO, mode: Mode): EnharmonicBias {
+        const offset = ((NoteSpelling.viewValue(tonic) - MODE_OFFSETS[mode]) % 12 + 12) % 12
+        const majorTonic = new NoteSpelling(offset)
+        const spelledTonic = spellingKey(majorTonic.format(
+            tonic.accidental === Accidental.Flat ? Accidental.Flat : Accidental.Sharp
+        ))
         return ACCIDENTAL_PREFERENCE_FOR_MAJOR[spelledTonic]
     }
 }
