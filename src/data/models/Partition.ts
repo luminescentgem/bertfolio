@@ -22,6 +22,16 @@ export default class Partition {
         if (index < 0 || index > this.measureColumns.length) {
             throw new Error(`index out of bounds: ${index}`)
         }
+        const column = (index > 0)
+            ? { masterTimeSignature:
+                    this.measureColumns[index-1].masterTimeSignature,
+                bpm: 
+                    this.measureColumns[index-1].bpm
+              }
+            : { masterTimeSignature: this.signature, bpm: this.bpm }
+
+        this.measureColumns.splice(index, 0, column)
+        
         this.staves.forEach(staff => {
             staff.newEmptyAt(index)
         })
